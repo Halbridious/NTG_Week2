@@ -6,37 +6,38 @@ public class PlayerController : MonoBehaviour {
 
     [SerializeField]
     Vector3 Velocity = new Vector3();
-
-    //will be derived
+    [Tooltip("Which direction is gravity pointing?  Should be normalized and cardinal!")]
     [SerializeField]
-    private float gravity;
-    [SerializeField]
-    private float jumpImpulse;
-
+    private Vector3 gravityDirection = Vector3.down;
+    [Tooltip("How quickly the player accelerates when 'running'")]
     [SerializeField]
     private float accel = 5;
-
+    [Tooltip("How long it should take to reach the apex of the player's jump.")]
     [SerializeField]
     private float jumpTime = .75f;
-
+    [Tooltip("How high (in unity units) the player should be able to jump.")]
     [SerializeField]
     private float jumpHeight = 3;
-
+    [Tooltip("How powerful the Jetpack thrust is.")]
     [SerializeField]
     private float jetpackImpulse = 5;
-
-    private pawnAABB pawn;
-
-    private bool isGrounded = false;
-
-    public float gravMult = 1f;
-
+    [Tooltip("Max charge time a jetpack has")]
     public float jetpackTime = 3f;
+    [Tooltip("Current charge time the jetpack has")]
     public float jetpackTimer = 3f;
 
+    //The strength of gravity (default), derived on start
+    private float gravStrength;
+    //The Strength of jump power, derived at the start
+    private float jumpImpulse;
+    //the collision hull
+    private pawnAABB pawn;
+    //tells whether or not the player is on the ground
+    private bool isGrounded = false;
 
-	// Use this for initialization
-	void Start () {
+
+    // Use this for initialization
+    void Start () {
         pawn = GetComponent<pawnAABB>();
         DeriveJumpValues();
 	}
@@ -58,7 +59,7 @@ public class PlayerController : MonoBehaviour {
         transform.position += results.distance;
 
         //if we've   collided w/ the ground, toggle that boolean
-        isGrounded = results.hitBottom;
+        isGrounded = results.hitBottom;//TODO:Change to be relative to gravity!
 
     }
 
@@ -91,7 +92,7 @@ public class PlayerController : MonoBehaviour {
         }
 
         //grav
-        Velocity.y -= gravity * Time.deltaTime * gravMult;
+        Velocity += gravityDirection * gravStrength * Time.deltaTime;
 
     }
 
@@ -114,8 +115,8 @@ public class PlayerController : MonoBehaviour {
     }
 
     void DeriveJumpValues() {
-        gravity = ( jumpHeight * 2 ) / ( jumpTime * jumpTime );
-        jumpImpulse = gravity * jumpTime;
+        gravStrength = ( jumpHeight * 2 ) / ( jumpTime * jumpTime );
+        jumpImpulse = gravStrength * jumpTime;
     }
 
     //adds a directional force to the velocity vector in the direction of the mouse
