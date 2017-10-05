@@ -11,7 +11,7 @@ public class pawnAABB : MonoBehaviour {
         public bool hitBottom;//if there was contact to the bottom of the pawn
         public bool hitLeft;//if there was contact to the left of the pawn
         public bool hitRight;//if there was contact to the right of the pawn
-        private Bounds bounds;//the objects hull
+        public Bounds bounds;//the objects hull
         
         //Constructor for the results datatype
         public CollisionResults(Vector3 distance, Bounds bounds, float skinWidth) {
@@ -101,6 +101,8 @@ public class pawnAABB : MonoBehaviour {
     [Tooltip("Which object types can this hull collide with.  Select all applicable.")]
     [SerializeField]
     private LayerMask collidableWith;
+    //[SerializeField]
+    //private LayerMask volumes;
 
 #endregion
 
@@ -152,7 +154,7 @@ public class pawnAABB : MonoBehaviour {
                 rayLength = hit.distance;//we're now only going to search the new shorter distance.  We don't care about colliding with anything further than this
                 results.Limit(rayLength - skinWidth, doHorizontal);//in the colliding data we now limit the distance we can move to this new distance.  This is were we actually say "we collided"
             }
-        }        
+        }
     }
 
 }

@@ -34,12 +34,14 @@ public class PlayerController : MonoBehaviour {
     private pawnAABB pawn;
     //tells whether or not the player is on the ground
     private bool isGrounded = false;
+    private BoxCollider2D aabb;
 
 
     // Use this for initialization
     void Start () {
         pawn = GetComponent<pawnAABB>();
         DeriveJumpValues();
+        aabb = GetComponent<BoxCollider2D>();
 	}
 
     // Update is called once per frame
@@ -62,6 +64,22 @@ public class PlayerController : MonoBehaviour {
         isGrounded = results.hitBottom;//TODO:Change to be relative to gravity!
 
     }
+
+    private void LateUpdate() {
+        //collide w/ volumes
+        GameObject[] volumes = GameObject.FindGameObjectsWithTag("Volume");
+        foreach (GameObject volume in volumes ) {
+            if( aabb.bounds.Intersects(volume.GetComponent<BoxCollider2D>().bounds)){
+                gravityDirection = volume.GetComponent<Gravity_Volume>().gravityVec;
+                gravStrength = volume.GetComponent<Gravity_Volume>().gravMult;
+            } else {
+                DeriveJumpValues();
+                gravityDirection = Vector3.down;
+            }
+        }
+    }
+
+    #region input handlers
 
     /**
      * This function checks on various inputs for: Jumping, Jetpacking, and running
@@ -149,4 +167,8 @@ public class PlayerController : MonoBehaviour {
             }
         }
     }
+
+    #endregion
+
+
 }
